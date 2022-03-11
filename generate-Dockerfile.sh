@@ -5,7 +5,7 @@ cd $(cd -P -- "$(dirname -- "$0")" && pwd -P)
 export DOCKERFILE=".build/Dockerfile"
 export STACKS_DIR=".build/docker-stacks"
 # please test the build of the commit in https://github.com/jupyter/docker-stacks/commits/master in advance
-export HEAD_COMMIT="cf5a7ab55638d7efcb074302e8cb74bded330b3a"
+export HEAD_COMMIT="8f0a73e76d17ce318681dad27ffa1cb6509c3e19"
 
 while [[ "$#" -gt 0 ]]; do case $1 in
   -p|--pw|--password) PASSWORD="$2" && USE_PASSWORD=1; shift;;
@@ -70,6 +70,7 @@ cat $STACKS_DIR/base-notebook/Dockerfile | grep -v 'BASE_CONTAINER' | grep -v 'F
 
 # copy files that are used during the build:
 cp $STACKS_DIR/base-notebook/jupyter_notebook_config.py .build/
+cp $STACKS_DIR/base-notebook/jupyter_server_config.py .build/
 cp $STACKS_DIR/base-notebook/fix-permissions .build/
 cp $STACKS_DIR/base-notebook/start.sh .build/
 cp $STACKS_DIR/base-notebook/start-notebook.sh .build/
@@ -83,24 +84,24 @@ echo "
 " >> $DOCKERFILE
 cat $STACKS_DIR/minimal-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
 
-echo "
+#echo "
 ############################################################################
 ################# Dependency: jupyter/scipy-notebook #######################
 ############################################################################
-" >> $DOCKERFILE
-cat $STACKS_DIR/scipy-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
+#" >> $DOCKERFILE
+#cat $STACKS_DIR/scipy-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
 
 # install Julia and R if not excluded or spare mode is used
-if [[ "$no_datascience_notebook" != 1 ]]; then
-  echo "
+#if [[ "$no_datascience_notebook" != 1 ]]; then
+#  echo "
   ############################################################################
   ################ Dependency: jupyter/datascience-notebook ##################
   ############################################################################
-  " >> $DOCKERFILE
-  cat $STACKS_DIR/datascience-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
-else
-  echo "Set 'no-datascience-notebook' = 'python-only', not installing the datascience-notebook with Julia and R."
-fi
+#  " >> $DOCKERFILE
+#  cat $STACKS_DIR/datascience-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
+#else
+#  echo "Set 'no-datascience-notebook' = 'python-only', not installing the datascience-notebook with Julia and R."
+#fi
 
 # Note that the following step also installs the cudatoolkit, which is
 # essential to access the GPU.
@@ -130,7 +131,8 @@ chmod -R 755 data/
 # set password
 if [[ "$USE_PASSWORD" == 1 ]]; then
   echo "Set password to given input"
-  SALT="3b4b6378355"
+  #SALT="3b4b6378355"
+  SALT="14758f1afd4"
   HASHED=$(echo -n ${PASSWORD}${SALT} | sha1sum | awk '{print $1}')
   unset PASSWORD  # delete variable PASSWORD
   # build jupyter_notebook_config.json
