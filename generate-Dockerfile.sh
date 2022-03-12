@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 cd $(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
+if [ -f ./.private/pass.txt ]
+then
+  echo "Reading password from .private/pass.txt"
+  PASSWORD=$(cat ./.private/pass.txt)
+else
+  echo "Not found .private/pass.txt"
+fi
+
 # Set the path of the generated Dockerfile
 export DOCKERFILE=".build/Dockerfile"
 export STACKS_DIR=".build/docker-stacks"
@@ -84,15 +92,15 @@ echo "
 " >> $DOCKERFILE
 cat $STACKS_DIR/minimal-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
 
-#echo "
+echo "
 ############################################################################
 ################# Dependency: jupyter/scipy-notebook #######################
 ############################################################################
-#" >> $DOCKERFILE
-#cat $STACKS_DIR/scipy-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
+" >> $DOCKERFILE
+cat $STACKS_DIR/scipy-notebook/Dockerfile | grep -v BASE_CONTAINER >> $DOCKERFILE
 
 # install Julia and R if not excluded or spare mode is used
-#if [[ "$no_datascience_notebook" != 1 ]]; then
+#if [[ "$no_datascience_notebook" != 1 ]]; thenls
 #  echo "
   ############################################################################
   ################ Dependency: jupyter/datascience-notebook ##################
